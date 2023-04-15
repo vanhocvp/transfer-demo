@@ -27,6 +27,17 @@ func UpdateStatus(transactionID int, status int) error {
 		Update("status", status).Error
 }
 
+func GetHistory(userID string) ([]Transaction, error) {
+	listTransaction := make([]Transaction, 0)
+	err := db.Model(Transaction{}).Where("sender_user_id = ?", userID).
+		Find(&listTransaction).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return listTransaction, nil
+}
+
 func GetListTransaction(userID string, receiverID string) ([]Transaction, error) {
 	listTransaction := make([]Transaction, 0)
 	err := db.Model(Transaction{}).Where("sender_user_id = ? AND receiver_user_id = ?", userID, receiverID).

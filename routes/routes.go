@@ -48,5 +48,6 @@ func InitRouter() *gin.Engine {
 	r.POST("/otpAuth", controllers.OtpAuth)
 	// Lấy danh sách người thụ hưởng gần nhất của userID: Giao dịch gần nhất
 	r.POST("/getListRecipient", controllers.GetListRecipient)
+	r.GET("/getHistory/:sender_id", controllers.GetHistory)
 	return r
 }
