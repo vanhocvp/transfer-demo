@@ -101,8 +101,10 @@ func CheckInfoReceiver(c *gin.Context) {
 			bankAccount, err := models.GetAccountNumberInfo(*response.AccountNumber, *response.BankName)
 			if err != nil {
 				log.Printf("[error] CheckInfoReceiver | failed when git bank account: %v", err)
+			} else {
+				response.ReceiverName = &bankAccount.CustomerName
 			}
-			response.ReceiverName = &bankAccount.CustomerName
+
 		}
 
 		log.Print("HERE")
