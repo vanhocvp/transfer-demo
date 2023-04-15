@@ -72,39 +72,45 @@ func CheckInfoReceiver(c *gin.Context) {
 	}
 	log.Printf("[info] CheckInfoReceiver | transaction: %v", transaction)
 	if *response.PaymentType == "account_number" {
-		log.Printf("HERE | %v", response.AccountNumber)
-		if *response.AccountNumber == "" && transaction != nil && transaction.AccountNumber != "" {
-			response.AccountNumber = &transaction.AccountNumber
-		}
-		log.Printf("HERE | %v", response.BankName)
-		if *response.BankName == "" && transaction != nil && transaction.BankName != "" {
-			response.BankName = &transaction.BankName
-		}
-		log.Printf("HERE | %v", response.ReceiverName)
-		if *response.ReceiverName == "" {
-			if transaction != nil && transaction.ReceiverName != "" {
-				response.ReceiverName = &transaction.ReceiverName
-			} else {
-				if *response.AccountNumber != "" && *response.BankName != "" {
-					bankAccount, err := models.GetAccountNumberInfo(*response.AccountNumber, *response.BankName)
-					if err != nil {
-						log.Printf("[error] CheckInfoReceiver | failed when git bank account: %v", err)
-					}
-					response.ReceiverName = &bankAccount.CustomerName
+		if transaction != nil {
+			log.Printf("HERE | %v", response.AccountNumber)
+			if *response.AccountNumber == "" && transaction.AccountNumber != "" {
+				response.AccountNumber = &transaction.AccountNumber
+			}
+			log.Printf("HERE | %v", response.BankName)
+			if *response.BankName == "" && transaction.BankName != "" {
+				response.BankName = &transaction.BankName
+			}
+			log.Print("HERE | %v", response.ReceiverName)
+			if *response.ReceiverName == "" {
+				if transaction.ReceiverName != "" {
+					response.ReceiverName = &transaction.ReceiverName
 				}
 			}
+
+			if *response.PaymentSource == -1 && transaction.PaymentSource != -1 {
+				response.PaymentSource = &transaction.PaymentSource
+			}
+			if *response.PaymentDestination == -1 && transaction.PaymentDestination != -1 {
+				response.PaymentDestination = &transaction.PaymentDestination
+			}
+			
 		}
+
+		if *response.AccountNumber != "" && *response.BankName != "" {
+			bankAccount, err := models.GetAccountNumberInfo(*response.AccountNumber, *response.BankName)
+			if err != nil {
+				log.Printf("[error] CheckInfoReceiver | failed when git bank account: %v", err)
+			}
+			response.ReceiverName = &bankAccount.CustomerName
+		}
+
 		log.Print("HERE")
 		// Check đã đủ 3 thông tin hay chưa
 		if *response.AccountNumber != "" && *response.BankName != "" && *response.ReceiverName != "" {
 			response.Status = 1 // full thoong tin
 			response.Message = "Ready to transfer"
-			if *response.PaymentSource == -1 && transaction != nil && transaction.PaymentSource != -1 {
-				response.PaymentSource = &transaction.PaymentSource
-			}
-			if *response.PaymentDestination == -1 && transaction != nil && transaction.PaymentDestination != -1 {
-				response.PaymentDestination = &transaction.PaymentDestination
-			}
+
 		} else {
 			response.Status = 0 // not enought
 			response.Message = "not enought info"
