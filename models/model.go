@@ -80,6 +80,7 @@ func Setup() {
 	gormMigrator.addAutoMigrate(Transaction{})
 	gormMigrator.addAutoMigrate(BankAccount{})
 	gormMigrator.addAutoMigrate(ViettelMoney{})
+	gormMigrator.addAutoMigrate(Recipient{})
 	err = gormMigrator.MakeMigration()
 	if err != nil {
 		panic(fmt.Sprintf("something wrong when makemigration GORM: %v", err))

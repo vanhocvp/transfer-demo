@@ -21,6 +21,23 @@ type Transaction struct {
 	UpdateAt           int64 `gorm:"autoUpdateTime:milli;index"`
 }
 
+func UpdateStatus(transactionID int, status int) error {
+	return db.Model(Transaction{}).
+		Where("id = ?", transactionID).
+		Update("status", status).Error
+}
+
+func GetListTransaction(userID string, receiverID string) ([]Transaction, error) {
+	listTransaction := make([]Transaction, 0)
+	err := db.Model(Transaction{}).Where("sender_user_id = ? AND receiver_user_id = ?", userID, receiverID).
+		Find(&listTransaction).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return listTransaction, nil
+}
+
 func GetTransactionByID(transactionID int) (*Transaction, error) {
 	transaction := Transaction{}
 	err := db.Model(Transaction{}).Where("id = ?", transactionID).First(&transaction).Error

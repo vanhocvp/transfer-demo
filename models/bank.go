@@ -19,3 +19,53 @@ func GetAccountNumberInfo(accountNumber string, bankName string) (*BankAccount, 
 	return &account, nil
 
 }
+
+func GetAccount(accountNumber *string, cardNumber *string) (*BankAccount, error) {
+	account := BankAccount{}
+	query := db.Model(BankAccount{})
+	if accountNumber != nil {
+		query = query.Where("account_number = ?", accountNumber)
+	}
+	if cardNumber != nil {
+		query = query.Where("card_number = ?", cardNumber)
+	}
+	err := query.First(&account).Error
+
+	return &account, err
+}
+
+func AddMoney(accountNumber *string, cardNumber *string, amount float64) error {
+	account, err := GetAccount(accountNumber, cardNumber)
+	if err != nil {
+		return err
+	}
+	newBalance := account.Balance + amount
+	query := db.Model(BankAccount{})
+	if accountNumber != nil {
+		query = query.Where("account_number = ?", accountNumber)
+	}
+	if cardNumber != nil {
+		query = query.Where("card_number = ?", cardNumber)
+	}
+	err = query.Update("balance", newBalance).Error
+
+	return err
+}
+
+//func SubMoney(accountNumber *string, cardNumber *string, amount float64) error {
+//	account, err := GetAccount(accountNumber, cardNumber)
+//	if err != nil {
+//		return err
+//	}
+//	newBalance := account.Balance + amount
+//	query := db.Model(BankAccount{})
+//	if accountNumber != nil {
+//		query = query.Where("account_number = ?", accountNumber)
+//	}
+//	if cardNumber != nil {
+//		query = query.Where("card_number = ?", cardNumber)
+//	}
+//	err = query.Update("balance", newBalance).Error
+//
+//	return err
+//}

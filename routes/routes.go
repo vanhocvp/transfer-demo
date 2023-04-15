@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vanhocvp/junctionx-hackathon/transfer-demo/controllers"
 	"github.com/vanhocvp/junctionx-hackathon/transfer-demo/setting"
+	"log"
 	// "go.elastic.co/apm"
 )
 
@@ -28,7 +29,7 @@ func InitRouter() *gin.Engine {
 	r := gin.Default()
 	r.Use(CORS())
 	r.Use(location.Default())
-
+	log.Print(setting.ServerSetting.CorsWhitelist)
 	r.GET("/heath", controllers.HealthCheck)
 	// Nhập thông tin số tài khoản, tên ngân hàng --> Tên khách hàng | So sánh tên khách hàng nếu có
 	r.POST("/checkInfo", controllers.CheckInfoReceiver)
@@ -45,6 +46,6 @@ func InitRouter() *gin.Engine {
 	// Authen transaction
 	r.POST("/otpAuth", controllers.OtpAuth)
 	// Lấy danh sách người thụ hưởng gần nhất của userID: Giao dịch gần nhất
-	r.POST("/getListRecipient")
+	r.POST("/getListRecipient", controllers.GetListRecipient)
 	return r
 }

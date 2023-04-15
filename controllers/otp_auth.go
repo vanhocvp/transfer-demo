@@ -36,6 +36,16 @@ func OtpAuth(c *gin.Context) {
 		return
 	}
 	if transaction.Otp == form.OTP {
+		// Thực hiện giao dịch
+		err := TransferProcess(transaction)
+		if err != nil {
+			log.Printf("[error] OtpAuth | err: %v", err)
+			c.JSON(http.StatusOK, gin.H{
+				"status": setting.AppSetting.StatusError,
+				"msg":    "Something wrong",
+			})
+			return
+		}
 		c.JSON(http.StatusOK, gin.H{
 			"status": 1,
 			"msg":    "Success",
