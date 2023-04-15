@@ -1,11 +1,13 @@
 package routes
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
 	"github.com/vanhocvp/junctionx-hackathon/transfer-demo/controllers"
 	"github.com/vanhocvp/junctionx-hackathon/transfer-demo/setting"
 	"log"
+
 	// "go.elastic.co/apm"
 )
 
@@ -27,7 +29,8 @@ func CORS() gin.HandlerFunc {
 
 func InitRouter() *gin.Engine {
 	r := gin.Default()
-	r.Use(CORS())
+	//r.Use(CORS())
+	r.Use(cors.Default())
 	r.Use(location.Default())
 	log.Print(setting.ServerSetting.CorsWhitelist)
 	r.GET("/heath", controllers.HealthCheck)
