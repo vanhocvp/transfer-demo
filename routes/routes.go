@@ -1,20 +1,18 @@
 package routes
 
 import (
-	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
 	"github.com/vanhocvp/junctionx-hackathon/transfer-demo/controllers"
 	"github.com/vanhocvp/junctionx-hackathon/transfer-demo/setting"
 	"log"
-
 	// "go.elastic.co/apm"
 )
 
 // CORS ...
 func CORS() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", setting.ServerSetting.CorsWhitelist)
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
@@ -29,8 +27,8 @@ func CORS() gin.HandlerFunc {
 
 func InitRouter() *gin.Engine {
 	r := gin.Default()
-	//r.Use(CORS())
-	r.Use(cors.Default())
+	r.Use(CORS())
+	//r.Use(cors.Default())
 	r.Use(location.Default())
 	log.Print(setting.ServerSetting.CorsWhitelist)
 	r.GET("/heath", controllers.HealthCheck)
