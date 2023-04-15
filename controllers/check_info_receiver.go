@@ -72,13 +72,15 @@ func CheckInfoReceiver(c *gin.Context) {
 	}
 	log.Printf("[info] CheckInfoReceiver | transaction: %v", transaction)
 	if *response.PaymentType == "account_number" {
-		log.Print("HERE")
+		log.Printf("HERE | %v", response.AccountNumber)
 		if *response.AccountNumber == "" && transaction.AccountNumber != "" {
 			response.AccountNumber = &transaction.AccountNumber
 		}
+		log.Print("HERE")
 		if *response.BankName == "" && transaction.BankName != "" {
 			response.BankName = &transaction.BankName
 		}
+		log.Print("HERE")
 		if *response.ReceiverName == "" {
 			if transaction.ReceiverName != "" {
 				response.ReceiverName = &transaction.ReceiverName
@@ -92,6 +94,7 @@ func CheckInfoReceiver(c *gin.Context) {
 				}
 			}
 		}
+		log.Print("HERE")
 		// Check đã đủ 3 thông tin hay chưa
 		if *response.AccountNumber != "" && *response.BankName != "" && *response.ReceiverName != "" {
 			response.Status = 1 // full thoong tin

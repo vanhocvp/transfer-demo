@@ -45,4 +45,43 @@ func GetTransactionByUserID(userID string, accountNumber *string, cardNumber *st
 	return &transaction, nil
 }
 
-// func CreateTransaction()
+//func CreateTransaction(
+//	SenderUserID string,
+//	ReceiverUserID string,
+//	PaymentSource int,
+//	PaymentDestination int,
+//	PaymentType string,
+//	AccountNumber string,
+//	PhoneNumber string,
+//	CardNumber string,
+//	BankName string,
+//	ReceiverName string,
+//	Amount int,
+//	Content int,
+//	Otp string,
+//	VoiceBio bool,
+//	Status int,
+//	CreateAt int64,
+//	UpdateAt int64,
+//) error {
+//	transaction := Transaction{
+//		SenderUserID:       SenderUserID,
+//		ReceiverUserID:     re,
+//		PaymentSource:      0,
+//		PaymentDestination: 0,
+//		PaymentType:        "",
+//		AccountNumber:      "",
+//		PhoneNumber:        "",
+//		CardNumber:         "",
+//		BankName:           "",
+//		ReceiverName:       "",
+//		Amount:             0,
+//		Content:            0,
+//		Otp:                "",
+//		VoiceBio:           false,
+//		Status:             0,
+//		CreateAt:           0,
+//		UpdateAt:           0,
+//	}
+//	return nil
+//}
