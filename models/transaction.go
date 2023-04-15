@@ -12,13 +12,22 @@ type Transaction struct {
 	CardNumber         string
 	BankName           string
 	ReceiverName       string
-	Amount             int
-	Content            int
+	Amount             float64
+	Content            string
 	Otp                string
 	VoiceBio           bool
 	Status             int
 	CreateAt           int64 `gorm:"autoCreateTime:milli;index;not null"`
 	UpdateAt           int64 `gorm:"autoUpdateTime:milli;index"`
+}
+
+func GetTransactionByID(transactionID int) (*Transaction, error) {
+	transaction := Transaction{}
+	err := db.Model(Transaction{}).Where("id = ?", transactionID).First(&transaction).Error
+	if err != nil {
+		return nil, err
+	}
+	return &transaction, nil
 }
 
 func GetTransactionByUserID(userID string, accountNumber *string, cardNumber *string, phoneNumber *string, receiverName *string) (*Transaction, error) {
@@ -45,43 +54,40 @@ func GetTransactionByUserID(userID string, accountNumber *string, cardNumber *st
 	return &transaction, nil
 }
 
-//func CreateTransaction(
-//	SenderUserID string,
-//	ReceiverUserID string,
-//	PaymentSource int,
-//	PaymentDestination int,
-//	PaymentType string,
-//	AccountNumber string,
-//	PhoneNumber string,
-//	CardNumber string,
-//	BankName string,
-//	ReceiverName string,
-//	Amount int,
-//	Content int,
-//	Otp string,
-//	VoiceBio bool,
-//	Status int,
-//	CreateAt int64,
-//	UpdateAt int64,
-//) error {
-//	transaction := Transaction{
-//		SenderUserID:       SenderUserID,
-//		ReceiverUserID:     re,
-//		PaymentSource:      0,
-//		PaymentDestination: 0,
-//		PaymentType:        "",
-//		AccountNumber:      "",
-//		PhoneNumber:        "",
-//		CardNumber:         "",
-//		BankName:           "",
-//		ReceiverName:       "",
-//		Amount:             0,
-//		Content:            0,
-//		Otp:                "",
-//		VoiceBio:           false,
-//		Status:             0,
-//		CreateAt:           0,
-//		UpdateAt:           0,
-//	}
-//	return nil
-//}
+func CreateTransaction(
+	SenderUserID *string,
+	ReceiverUserID *string,
+	PaymentSource *int,
+	PaymentDestination *int,
+	PaymentType *string,
+	AccountNumber *string,
+	PhoneNumber *string,
+	CardNumber *string,
+	BankName *string,
+	ReceiverName *string,
+	Amount *float64,
+	Content *string,
+	Otp string,
+) (*Transaction, error) {
+	transaction := Transaction{
+		SenderUserID:       *SenderUserID,
+		ReceiverUserID:     *ReceiverUserID,
+		PaymentSource:      *PaymentSource,
+		PaymentDestination: *PaymentDestination,
+		PaymentType:        *PaymentType,
+		AccountNumber:      *AccountNumber,
+		PhoneNumber:        *PhoneNumber,
+		CardNumber:         *CardNumber,
+		BankName:           *BankName,
+		ReceiverName:       *ReceiverName,
+		Amount:             *Amount,
+		Content:            *Content,
+		Otp:                Otp,
+		Status:             0, // init
+	}
+	err := db.Model(Transaction{}).Create(&transaction).Error
+	if err != nil {
+		return nil, err
+	}
+	return &transaction, nil
+}

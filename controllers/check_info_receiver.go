@@ -81,7 +81,7 @@ func CheckInfoReceiver(c *gin.Context) {
 			if *response.BankName == "" && transaction.BankName != "" {
 				response.BankName = &transaction.BankName
 			}
-			log.Print("HERE | %v", response.ReceiverName)
+			log.Printf("HERE | %v", response.ReceiverName)
 			if *response.ReceiverName == "" {
 				if transaction.ReceiverName != "" {
 					response.ReceiverName = &transaction.ReceiverName
@@ -94,7 +94,7 @@ func CheckInfoReceiver(c *gin.Context) {
 			if *response.PaymentDestination == -1 && transaction.PaymentDestination != -1 {
 				response.PaymentDestination = &transaction.PaymentDestination
 			}
-			
+
 		}
 
 		if *response.AccountNumber != "" && *response.BankName != "" {

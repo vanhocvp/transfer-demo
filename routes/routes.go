@@ -40,10 +40,11 @@ func InitRouter() *gin.Engine {
 	// ==> Dựa vào thông giao dịch cũ để điền thông tin: Họ tên, stk, so the,
 
 	// Tạo draft transaction
-	r.POST("/createTransaction")
+	r.POST("/getBalance", controllers.GetBalance)
+	r.POST("/createTransaction", controllers.CreateTransactionDraft)
 	// Authen transaction
-	r.POST("/checkOTPAuthed")
+	r.POST("/otpAuth", controllers.OtpAuth)
 	// Lấy danh sách người thụ hưởng gần nhất của userID: Giao dịch gần nhất
-	r.GET("/getListRecipient")
+	r.POST("/getListRecipient")
 	return r
 }
