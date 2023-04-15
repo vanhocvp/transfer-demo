@@ -73,16 +73,16 @@ func CheckInfoReceiver(c *gin.Context) {
 	log.Printf("[info] CheckInfoReceiver | transaction: %v", transaction)
 	if *response.PaymentType == "account_number" {
 		log.Printf("HERE | %v", response.AccountNumber)
-		if *response.AccountNumber == "" && transaction.AccountNumber != "" {
+		if *response.AccountNumber == "" && transaction != nil && transaction.AccountNumber != "" {
 			response.AccountNumber = &transaction.AccountNumber
 		}
 		log.Printf("HERE | %v", response.BankName)
-		if *response.BankName == "" && transaction.BankName != "" {
+		if *response.BankName == "" && transaction != nil && transaction.BankName != "" {
 			response.BankName = &transaction.BankName
 		}
 		log.Printf("HERE | %v", response.ReceiverName)
 		if *response.ReceiverName == "" {
-			if transaction.ReceiverName != "" {
+			if transaction != nil && transaction.ReceiverName != "" {
 				response.ReceiverName = &transaction.ReceiverName
 			} else {
 				if *response.AccountNumber != "" && *response.BankName != "" {
@@ -99,10 +99,10 @@ func CheckInfoReceiver(c *gin.Context) {
 		if *response.AccountNumber != "" && *response.BankName != "" && *response.ReceiverName != "" {
 			response.Status = 1 // full thoong tin
 			response.Message = "Ready to transfer"
-			if *response.PaymentSource == -1 && transaction.PaymentSource != -1 {
+			if *response.PaymentSource == -1 && transaction != nil && transaction.PaymentSource != -1 {
 				response.PaymentSource = &transaction.PaymentSource
 			}
-			if *response.PaymentDestination == -1 && transaction.PaymentDestination != -1 {
+			if *response.PaymentDestination == -1 && transaction != nil && transaction.PaymentDestination != -1 {
 				response.PaymentDestination = &transaction.PaymentDestination
 			}
 		} else {
