@@ -43,6 +43,7 @@ func CreateTransactionDraft(c *gin.Context) {
 		num, _ := rand.Int(rand.Reader, big.NewInt(10))
 		otp += fmt.Sprintf("%d", num)
 	}
+	otp = "123456"
 	fmt.Println("Random OTP:", otp)
 	transaction, err := models.CreateTransaction(
 		form.UserID,
