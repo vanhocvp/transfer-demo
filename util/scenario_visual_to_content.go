@@ -3,9 +3,8 @@ package util
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/vanhocvp/junctionx-hackathon/transfer-demo/setting"
 	"log"
-
-	"github.com/dambaquyen96/smartivr-backend-go/pkg/setting"
 )
 
 // ExtractPortList ...

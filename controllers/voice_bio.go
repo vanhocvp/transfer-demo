@@ -1,10 +1,20 @@
 package controllers
 
 import (
+	"bytes"
+	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/vanhocvp/junctionx-hackathon/transfer-demo/setting"
+	"github.com/vanhocvp/junctionx-hackathon/transfer-demo/util"
+	"io"
 	"io/ioutil"
 	"log"
+	"mime/multipart"
 	"net/http"
+	"os"
+	"path/filepath"
 )
 
 func VoiceBioAuth(c *gin.Context) {
@@ -12,7 +22,8 @@ func VoiceBioAuth(c *gin.Context) {
 	log.Println(file.Filename)
 	transID := c.PostForm("transaction_id")
 	log.Print(transID)
-
+	senderID := c.PostForm("sender_id")
+	log.Print(senderID)
 	// Upload the file to specific dst.
 	//c.SaveUploadedFile(file, "file/"+file.Filename)
 
@@ -29,15 +40,86 @@ func VoiceBioAuth(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	err = ioutil.WriteFile("file/"+file.Filename, fileBlob, 0644)
+
+	fileName := fmt.Sprintf("file/%v.wav", util.GetCurrentTimeByMillisecond())
+
+	err = ioutil.WriteFile(fileName, fileBlob, 0644)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	err = CheckVoiceBio(fileName, "http://124.158.5.212:30145/verify_v2", senderID)
+	if err != nil {
+		log.Printf("[error] OtpAuth | err: %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"status": setting.AppSetting.StatusError,
+			"msg":    "Not authen",
+		})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"status": 1,
 		"msg":    "Success",
 	})
 
+}
+
+func CheckVoiceBio(filePath string, url string, senderID string) error {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+
+	part, err := writer.CreateFormFile("file", filepath.Base(filePath))
+	if err != nil {
+		return err
+	}
+	_, err = io.Copy(part, file)
+	if err != nil {
+		return err
+	}
+
+	writer.WriteField("spk_id", "1")
+
+	err = writer.Close()
+	if err != nil {
+		return err
+	}
+
+	request, err := http.NewRequest("POST", url, body)
+	if err != nil {
+		return err
+	}
+	request.Header.Set("Content-Type", writer.FormDataContentType())
+
+	client := &http.Client{}
+	resp, err := client.Do(request)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	// Xử lý response
+	respData := make(map[string]interface{})
+	respByteData, err := ioutil.ReadAll(resp.Body)
+	fmt.Printf("respData: %s", string(respByteData))
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(respByteData, &respData)
+	if err != nil {
+		return err
+	}
+	// get status from response
+	status := respData["status"]
+	if status != "success" {
+		return errors.New("")
+	}
+
+	return nil
 }
