@@ -18,7 +18,7 @@ import (
 )
 
 type Response struct {
-	Success      string `json:"success"`
+	Success      bool   `json:"success"`
 	Message      string `json:"msg"`
 	Result       Result `json:"result"`
 	ResponseTime string `json:"response_time"`
@@ -158,7 +158,7 @@ func CheckASR(filePath string, url string) (string, error) {
 	}
 	// get status from response
 	status := respData.Success
-	if status != "true" {
+	if status != true {
 		return "", errors.New("not authen")
 	}
 	text := respData.Result.Text
