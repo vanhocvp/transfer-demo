@@ -25,7 +25,7 @@ func GetBalance(c *gin.Context) {
 		return
 	}
 
-	log.Printf("[info] GetBalance | form: %v | %v | %v", form, form.SenderID, form.DriverID)
+	log.Printf("[info] GetBalance | form: %v | %v | %v", form, *form.SenderID, form.DriverID)
 
 	balance, err := models.GetBalance(*form.SenderID)
 	if err != nil {
