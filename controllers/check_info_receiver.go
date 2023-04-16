@@ -71,33 +71,163 @@ func CheckInfoReceiver(c *gin.Context) {
 		log.Printf("[error] CheckInfoReceiver | Failed when get transaction: %v", err)
 	}
 	log.Printf("[info] CheckInfoReceiver | transaction: %v", transaction)
-	if *response.PaymentType == "account_number" {
+	if *response.PaymentType == "phone_number" {
 		if transaction != nil {
-			log.Printf("HERE | %v", response.AccountNumber)
-			if *response.AccountNumber == "" && transaction.AccountNumber != "" {
-				response.AccountNumber = &transaction.AccountNumber
-			}
-			log.Printf("HERE | %v", response.BankName)
-			if *response.BankName == "" && transaction.BankName != "" {
-				response.BankName = &transaction.BankName
-			}
-			log.Printf("HERE | %v", response.ReceiverName)
-			if *response.ReceiverName == "" {
-				if transaction.ReceiverName != "" {
-					response.ReceiverName = &transaction.ReceiverName
+			if transaction.PaymentType == "phone_number" {
+				log.Printf("HERE | %v", response.AccountNumber)
+				if *response.PhoneNumber == "" && transaction.PhoneNumber != "" {
+					response.PhoneNumber = &transaction.PhoneNumber
+				}
+				log.Printf("HERE | %v", response.ReceiverName)
+				if *response.ReceiverName == "" {
+					if transaction.ReceiverName != "" {
+						response.ReceiverName = &transaction.ReceiverName
+					}
+				}
+
+				if *response.PaymentSource == -1 && transaction.PaymentSource != -1 {
+					response.PaymentSource = &transaction.PaymentSource
+				}
+				if *response.PaymentDestination == -1 && transaction.PaymentDestination != -1 {
+					response.PaymentDestination = &transaction.PaymentDestination
 				}
 			}
+		}
 
-			if *response.PaymentSource == -1 && transaction.PaymentSource != -1 {
-				response.PaymentSource = &transaction.PaymentSource
+		if *response.PhoneNumber != "" && *response.ReceiverName == "" {
+			viettelAcc, err := models.GetViettelAccount(*response.PhoneNumber)
+			if err != nil {
+				log.Printf("[error] CheckInfoReceiver | failed when get viettel money account: %v", err)
+			} else {
+				response.ReceiverName = &viettelAcc.UserName
 			}
-			if *response.PaymentDestination == -1 && transaction.PaymentDestination != -1 {
-				response.PaymentDestination = &transaction.PaymentDestination
+		}
+
+		log.Print("HERE")
+		// Check đã đủ 3 thông tin hay chưa
+		if *response.PhoneNumber != "" && *response.ReceiverName != "" {
+			response.Status = 1 // full thoong tin
+			response.Message = "Ready to transfer"
+
+		} else {
+			response.Status = 0 // not enought
+			response.Message = "not enought info"
+		}
+
+		responseJSON, err := json.Marshal(response)
+		if err != nil {
+			log.Printf("[error] UpdateScenario | %v", err)
+			c.JSON(http.StatusOK, gin.H{
+				"status": setting.AppSetting.StatusError,
+				"msg":    "Something wrong",
+			})
+			return
+		}
+		log.Printf("[info] GetConversationDetail | Response %s", string(responseJSON))
+		c.JSON(http.StatusOK, gin.H{
+			"status": response.Status,
+			"msg":    response.Message,
+			"data":   response,
+		})
+
+	}
+	if *response.PaymentType == "card_number" {
+		if transaction != nil {
+			if transaction.PaymentType == "card_number" {
+				if *response.CardNumber == "" && transaction.CardNumber != "" {
+					response.CardNumber = &transaction.CardNumber
+				}
+				if *response.BankName == "" && transaction.BankName != "" {
+					response.BankName = &transaction.BankName
+				}
+				log.Printf("HERE | %v", response.ReceiverName)
+				if *response.ReceiverName == "" {
+					if transaction.ReceiverName != "" {
+						response.ReceiverName = &transaction.ReceiverName
+					}
+				}
+
+				if *response.PaymentSource == -1 && transaction.PaymentSource != -1 {
+					response.PaymentSource = &transaction.PaymentSource
+				}
+				if *response.PaymentDestination == -1 && transaction.PaymentDestination != -1 {
+					response.PaymentDestination = &transaction.PaymentDestination
+				}
+
 			}
 
 		}
 
-		if *response.AccountNumber != "" && *response.BankName != "" {
+		if *response.CardNumber != "" && (*response.BankName == "" || *response.ReceiverName == "") {
+			bankAccount, err := models.GetCardNumberInfo(*response.CardNumber)
+			if err != nil {
+				log.Printf("[error] CheckInfoReceiver | failed when git bank account: %v", err)
+			} else {
+				if *response.ReceiverName == "" {
+					response.ReceiverName = &bankAccount.CustomerName
+				}
+				if *response.BankName == "" {
+					response.BankName = &bankAccount.BankName
+				}
+			}
+
+		}
+
+		// Check đã đủ 3 thông tin hay chưa
+		if *response.CardNumber != "" && *response.BankName != "" && *response.ReceiverName != "" {
+			response.Status = 1 // full thoong tin
+			response.Message = "Ready to transfer"
+
+		} else {
+			response.Status = 0 // not enought
+			response.Message = "not enought info"
+		}
+
+		responseJSON, err := json.Marshal(response)
+		if err != nil {
+			log.Printf("[error] UpdateScenario | %v", err)
+			c.JSON(http.StatusOK, gin.H{
+				"status": setting.AppSetting.StatusError,
+				"msg":    "Something wrong",
+			})
+			return
+		}
+		log.Printf("[info] GetConversationDetail | Response %s", string(responseJSON))
+		c.JSON(http.StatusOK, gin.H{
+			"status": response.Status,
+			"msg":    response.Message,
+			"data":   response,
+		})
+
+	}
+	if *response.PaymentType == "account_number" {
+		if transaction != nil {
+			if transaction.PaymentType == "account_number" {
+				log.Printf("HERE | %v", response.AccountNumber)
+				if *response.AccountNumber == "" && transaction.AccountNumber != "" {
+					response.AccountNumber = &transaction.AccountNumber
+				}
+				log.Printf("HERE | %v", response.BankName)
+				if *response.BankName == "" && transaction.BankName != "" {
+					response.BankName = &transaction.BankName
+				}
+				log.Printf("HERE | %v", response.ReceiverName)
+				if *response.ReceiverName == "" {
+					if transaction.ReceiverName != "" {
+						response.ReceiverName = &transaction.ReceiverName
+					}
+				}
+
+				if *response.PaymentSource == -1 && transaction.PaymentSource != -1 {
+					response.PaymentSource = &transaction.PaymentSource
+				}
+				if *response.PaymentDestination == -1 && transaction.PaymentDestination != -1 {
+					response.PaymentDestination = &transaction.PaymentDestination
+				}
+			}
+		}
+
+		if *response.AccountNumber != "" && *response.BankName != "" && *response.ReceiverName == "" {
 			bankAccount, err := models.GetAccountNumberInfo(*response.AccountNumber, *response.BankName)
 			if err != nil {
 				log.Printf("[error] CheckInfoReceiver | failed when git bank account: %v", err)

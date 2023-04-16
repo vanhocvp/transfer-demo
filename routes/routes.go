@@ -49,5 +49,6 @@ func InitRouter() *gin.Engine {
 	// Lấy danh sách người thụ hưởng gần nhất của userID: Giao dịch gần nhất
 	r.POST("/getListRecipient", controllers.GetListRecipient)
 	r.GET("/getHistory/:sender_id", controllers.GetHistory)
+	r.POST("/voiceBio", controllers.VoiceBioAuth)
 	return r
 }

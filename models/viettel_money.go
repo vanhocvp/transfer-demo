@@ -4,6 +4,7 @@ type ViettelMoney struct {
 	ID          int
 	DriverID    string
 	PhoneNumber string
+	UserName    string
 	ViettelPay  float64
 	Money       float64
 }

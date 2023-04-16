@@ -20,6 +20,16 @@ func GetAccountNumberInfo(accountNumber string, bankName string) (*BankAccount, 
 
 }
 
+func GetCardNumberInfo(cardNumber string) (*BankAccount, error) {
+	account := BankAccount{}
+	err := db.Model(BankAccount{}).Where("card_number = ?", cardNumber).First(&account).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &account, nil
+}
+
 func GetAccount(accountNumber *string, cardNumber *string) (*BankAccount, error) {
 	account := BankAccount{}
 	query := db.Model(BankAccount{})
