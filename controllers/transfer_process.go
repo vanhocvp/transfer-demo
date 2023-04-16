@@ -1,16 +1,21 @@
 package controllers
 
-import "github.com/vanhocvp/junctionx-hackathon/transfer-demo/models"
+import (
+	"github.com/vanhocvp/junctionx-hackathon/transfer-demo/models"
+	"log"
+)
 
 func TransferProcess(transaction *models.Transaction) error {
 	// thực hiện chuyển tiền
 	paymentType := transaction.PaymentType
 	if paymentType == "account_number" {
+		log.Print("add money")
 		err := models.AddMoney(&transaction.AccountNumber, nil, transaction.Amount)
 		if err != nil {
 			return err
 		}
 		// Tru tien viettel money
+		log.Print("done add money")
 		err = models.SubViettelMoney(transaction.SenderUserID, transaction.Amount, transaction.PaymentSource)
 		if err != nil {
 			return err
