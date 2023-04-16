@@ -11,7 +11,7 @@ type ViettelMoney struct {
 
 func GetBalance(PhoneNumber string) (*ViettelMoney, error) {
 	viettelMoney := ViettelMoney{}
-	err := db.Model(ViettelMoney{}).Where("phone_number").First(&viettelMoney).Error
+	err := db.Model(ViettelMoney{}).Where("phone_number = ?", PhoneNumber).First(&viettelMoney).Error
 	if err != nil {
 		return nil, err
 	}
