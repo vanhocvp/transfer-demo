@@ -218,10 +218,10 @@ func CheckVoiceBio(filePath string, url string, senderID string) error {
 	// get status from response
 	status := respData["status"]
 	if status != "success" {
-		if respData["is_same"] == false {
-			return errors.New("not authen")
-		}
+		return errors.New("not authen")
 	}
-
+	if respData["is_same"] == false {
+		return errors.New("not authen")
+	}
 	return nil
 }
