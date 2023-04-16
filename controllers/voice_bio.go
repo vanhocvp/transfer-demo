@@ -52,7 +52,7 @@ func VoiceBioAuth(c *gin.Context) {
 	} else {
 		fmt.Println("Error:", err)
 	}
-	log.Print(transID)
+	log.Print(transactionID)
 	senderID := c.PostForm("sender_id")
 	log.Print(senderID)
 	// Upload the file to specific dst.
