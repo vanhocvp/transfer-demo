@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/vanhocvp/junctionx-hackathon/transfer-demo/models"
 	"github.com/vanhocvp/junctionx-hackathon/transfer-demo/setting"
 	"github.com/vanhocvp/junctionx-hackathon/transfer-demo/util"
 	"io"
@@ -15,6 +16,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 )
 
 type Response struct {
@@ -44,6 +46,12 @@ func VoiceBioAuth(c *gin.Context) {
 	file, _ := c.FormFile("file")
 	log.Println(file.Filename)
 	transID := c.PostForm("transaction_id")
+	transactionID, err := strconv.Atoi(transID)
+	if err == nil {
+		fmt.Println(transactionID)
+	} else {
+		fmt.Println("Error:", err)
+	}
 	log.Print(transID)
 	senderID := c.PostForm("sender_id")
 	log.Print(senderID)
@@ -99,6 +107,25 @@ func VoiceBioAuth(c *gin.Context) {
 		})
 		return
 	}
+	transaction, err := models.GetTransactionByID(transactionID)
+	if err != nil {
+		log.Printf("[error] UpdateScenario | %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"status": setting.AppSetting.StatusError,
+			"msg":    "Something wrong",
+		})
+		return
+	}
+	err = TransferProcess(transaction)
+	if err != nil {
+		log.Printf("[error] OtpAuth | err: %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"status": setting.AppSetting.StatusError,
+			"msg":    "Something wrong",
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"status": 1,
 		"msg":    "Success",
